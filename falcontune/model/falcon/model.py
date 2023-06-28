@@ -523,7 +523,7 @@ class Attention40B(nn.Module):
             key_layer_ = key_layer.reshape(batch_size, self.num_heads, -1, self.head_dim)
             value_layer_ = value_layer.reshape(batch_size, self.num_heads, -1, self.head_dim)
 
-            with torch.backends.cuda.sdp_kernel(enable_flash=True, enable_math=False, enable_mem_efficient=False):
+            with torch.backends.cuda.sdp_kernel(enable_flash=True, enable_math=False, enable_mem_efficient=True):
                 attn_output = F.scaled_dot_product_attention(
                     query_layer_, key_layer_, value_layer_, None, 0.0, is_causal=True
                 )

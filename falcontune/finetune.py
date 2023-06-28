@@ -64,7 +64,12 @@ def finetune(args):
     lora_config = LoraConfig(
         r=tune_config.lora_r,
         lora_alpha=tune_config.lora_alpha,
-        target_modules=tune_config.target_modules,
+        target_modules=[
+        "query_key_value",
+        "dense",
+        "dense_h_to_4h",
+        "dense_4h_to_h",
+            ],
         lora_dropout=tune_config.lora_dropout,
         bias="none",
         task_type="CAUSAL_LM",
@@ -117,7 +122,7 @@ def finetune(args):
             per_device_train_batch_size=tune_config.mbatch_size,
             gradient_accumulation_steps=tune_config.gradient_accumulation_steps,
             warmup_steps=tune_config.warmup_steps,
-            optim="adamw_torch",
+            optim="paged_adamw_32bit",
             num_train_epochs=tune_config.epochs,
             learning_rate=tune_config.lr,
             fp16=True,
@@ -130,6 +135,7 @@ def finetune(args):
             save_total_limit=tune_config.save_total_limit,
             load_best_model_at_end=False,
             ddp_find_unused_parameters=False if tune_config.ddp else None,
+            lr_scheduler_type = "constant"
         )
 
         trainer = transformers.Trainer(
@@ -146,6 +152,10 @@ def finetune(args):
         model.state_dict = (
             lambda self, *_, **__: get_peft_model_state_dict(self, old_state_dict())
         ).__get__(model, type(model))
+
+        for name, module in trainer.model.named_modules():
+            if "norm" in name:
+                module = module.to(torch.float32)
 
         # Set Verbose
         if tune_config.verbose:

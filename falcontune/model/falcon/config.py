@@ -17,6 +17,24 @@ class FALCON40B4bitConfig:
     max_seq_len = 2048
     device_map = "auto"
 
+class FALCON40B4bitConfig:
+    name = 'falcon-40b-4bit'
+    hf_config_name = "/home/y20wu/ClueAI/falcon-40b-gptq/"
+    hf_tokenizer_config = "/home/y20wu/ClueAI/falcon-40b-gptq/"
+    bits = 4
+    groupsize = -1
+    max_seq_len = 2048
+    device_map = "auto"
+
+class FALCON40BInstruct4bitConfig:
+    name = 'falcon-40b-instruct-4bit'
+    hf_config_name = "TheBloke/falcon-40b-instruct-GPTQ"
+    hf_tokenizer_config = "TheBloke/falcon-40b-instruct-GPTQ"
+    bits = 4
+    groupsize = -1
+    max_seq_len = 2048
+    device_map = "auto"
+
 
 class FALCON7B8bitConfig:
     name = 'falcon-7b'
@@ -76,3 +94,4 @@ class FALCON40BInstruct8bitConfig:
     groupsize = None
     max_seq_len = 2048
     device_map = "auto"
+

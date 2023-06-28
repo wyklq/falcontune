@@ -1,6 +1,6 @@
 # falcontune: 4-Bit Finetuning of FALCONs on a Consumer GPU
 
-**falcontune** allows finetuning FALCONs (e.g., falcon-40b-4bit) on as little as one consumer-grade A100 40GB. 
+**falcontune** allows finetuning FALCONs (e.g., falcon-40b-4bit) on as little as one consumer-grade V100 32GB. (This copy has some patches to make it work stable in V100 in finetuning and generate good result. Use upstream version if you have A100 or new generation Nvidia GPUs) 
 
 Its features tiny and easy-to-use codebase.
 
@@ -8,10 +8,10 @@ One benefit of being able to finetune larger LLMs on one GPU is the ability to e
 
 Underneath the hood, **falcontune** implements the LoRA algorithm over an LLM compressed using the GPTQ algorithm, which requires implementing a backward pass for the quantized LLM.
 
-**falcontune** can generate a 50-token recipe on A100 40GB for ~ 10 seconds using triton backend
+**falcontune** can generate a 50-token recipe on V100 32GB for ~ 20 seconds using cuda backend
 
 ```
-$ falcontune generate --interactive --model falcon-40b-instruct-4bit --weights gptq_model-4bit--1g.safetensors --max_new_tokens=50 --use_cache --do_sample --prompt "How to prepare pasta?"
+$ falcontune generate --interactive --model falcon-40b-4bit --weights ../falcon-40b-gptq --max_new_tokens=50 --use_cache --do_sample --prompt "How to prepare pasta?"
 
 
 How to prepare pasta?
@@ -28,10 +28,10 @@ Instructions:
 Took 10.042 s
 ```
 
-This example is based on the model: TheBloke/falcon-40b-instruct-GPTQ.
+This example is based on the model: wyklq/falcon-40b-gptq
 
 Here is a [Google Colab](https://colab.research.google.com/drive/1Pv7Dn60u_ANgkhRojAIX-VOkU3J-2cYh?usp=sharing). 
-You will need a A100 40GB to finetune the model.
+You will need a V100 32GB or A100 40GB to finetune the model.
 
 ## Installation
 
@@ -66,7 +66,7 @@ You can generate text directly from the command line. This generates text from t
 ```
 $ falcontune generate \
     --interactive \
-    --model falcon-40b-instruct-4bit \
+    --model falcon-40b-4bit \
     --weights gptq_model-4bit--1g.safetensors \
     --max_new_tokens=50 \
     --use_cache \
@@ -162,12 +162,12 @@ You can finetune any model of the FALCON family:
 
 
 <details>
-<summary>FALCON-40B</summary>
+<summary>FALCON-40B-4BIT</summary>
 <br>
 
     $ falcontune finetune \
-        --model=falcon-40b \
-        --weights=tiiuae/falcon-40b \
+        --model=falcon-40b-4bit \
+        --weights=wyklq/falcon-40b-gptq \
         --dataset=./alpaca_data_cleaned.json \
         --data_type=alpaca \
         --lora_out_dir=./falcon-40b-alpaca/ \
@@ -182,8 +182,7 @@ You can finetune any model of the FALCON family:
         --warmup_steps=5 \
         --save_steps=50 \
         --save_total_limit=3 \
-        --logging_steps=5 \
-        --target_modules='["query_key_value"]'
+        --logging_steps=5
 
     The above commands will download the model and use LoRA to finetune the quantized model. The final adapters and the checkpoints will be saved in `falcon-40b-alpaca` and available for generation as follows:
 
@@ -326,6 +325,11 @@ You can finetune any model of the FALCON family:
 * The LLAMA, OPT, and BLOOM models by META FAIR and the BigScience consortium
 * The `llmtune` repo by [kuleshov-group](https://github.com/kuleshov-group/llmtune)
 
+## License
+Please note, the upstream project is under Apache license, refer to the license file.
+But for convienient, I copied a merge_lora.py from Baize project, which is GPL licensed. So please keep it independant. 
+
+And please use falcon-40b only for commercial usage.
 
 ## Consultations
 Need a custom solution? Let me know: `r.m.mihaylov@gmail.com`
