@@ -8,6 +8,7 @@ from falcontune.model.falcon.config import (
     FALCON7B4bitConfig,
     FALCON40B4bitConfig,
     FALCON40BInstruct4bitConfig,
+    FALCON40BOasst4bitConfig,
 )
 
 
@@ -21,6 +22,7 @@ MODEL_CONFIGS = {
     FALCON7B4bitConfig.name: FALCON7B4bitConfig,
     FALCON40B4bitConfig.name: FALCON40B4bitConfig,
     FALCON40BInstruct4bitConfig.name: FALCON40BInstruct4bitConfig,
+    FALCON40BOasst4bitConfig.name: FALCON40BOasst4bitConfig,
 }
 
 
